@@ -28,7 +28,7 @@ import {
 import axios from 'axios';
 import NoImage from './assets/no-image.svg';
 
-const NEWS_API_KEY = '0262fe33c31c1ae5c2c0bc85a8e9bf41';
+const NEWS_API_KEY = 'f1708cabe10d87640699231367c8b8e1';
 const NEWS_API_ENDPOINT = 'https://gnews.io/api/v4/search';
 
 const categories = [
