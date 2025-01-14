@@ -50,25 +50,33 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(NEWS_API_ENDPOINT, {
-        params: {
-          q: query,
-          lang: 'en',
-          apikey: NEWS_API_KEY,
-          max: 6
-        }
-      });
+      console.log('Fetching news for query:', query);
+      const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&lang=en&apikey=${NEWS_API_KEY}&max=6`;
+      console.log('Request URL:', url);
+      
+      const response = await axios.get(url);
+      console.log('API Response:', response.data);
 
-      setHeadlines(response.data.articles.map(article => ({
-        ...article,
-        urlToImage: article.image,
-        publishedAt: article.publishedAt,
-        source: { name: article.source.name }
-      })));
+      if (response.data.articles && Array.isArray(response.data.articles)) {
+        setHeadlines(response.data.articles.map(article => ({
+          title: article.title,
+          description: article.description,
+          url: article.url,
+          urlToImage: article.image || NoImage,
+          publishedAt: article.publishedAt,
+          source: { name: article.source?.name || 'Unknown' }
+        })));
+      } else {
+        throw new Error('Invalid response format from API');
+      }
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching news:', err);
-      setError('Failed to load news headlines. Please try again later.');
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      setError(err.response?.data?.message || err.message || 'Failed to load news headlines. Please try again later.');
       setLoading(false);
     }
   };
@@ -285,7 +293,7 @@ function App() {
                     <Box sx={{ position: 'relative', paddingTop: '56.25%' }}>
                       <CardMedia
                         component="img"
-                        image={article.urlToImage || NoImage}
+                        image={article.urlToImage}
                         alt={article.title}
                         className="news-image"
                         sx={{
