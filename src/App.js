@@ -28,16 +28,16 @@ import {
 import axios from 'axios';
 import NoImage from './assets/no-image.svg';
 
-const NEWS_API_KEY = process.env.REACT_APP_NEWS_API_KEY || '78ec130bdfe24dc8a5f048b288345888';
-const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
+const NEWS_API_KEY = '0262fe33c31c1ae5c2c0bc85a8e9bf41';
+const NEWS_API_ENDPOINT = 'https://gnews.io/api/v4/search';
 
 const categories = [
   { id: 'all', label: 'All AI News', icon: <NewsIcon />, query: 'artificial intelligence' },
-  { id: 'llm', label: 'LLMs & ChatGPT', icon: <LLMIcon />, query: 'large language models OR chatgpt' },
-  { id: 'robotics', label: 'Robotics & Automation', icon: <RoboticsIcon />, query: 'AI robotics OR automation' },
-  { id: 'development', label: 'AI Development', icon: <DevelopmentIcon />, query: 'AI development tools OR coding' },
-  { id: 'research', label: 'AI Research', icon: <ResearchIcon />, query: 'artificial intelligence research breakthroughs' },
-  { id: 'business', label: 'AI Business', icon: <BusinessIcon />, query: 'AI business applications OR industry' }
+  { id: 'llm', label: 'LLMs & ChatGPT', icon: <LLMIcon />, query: 'large language models chatgpt' },
+  { id: 'robotics', label: 'Robotics & Automation', icon: <RoboticsIcon />, query: 'AI robotics automation' },
+  { id: 'development', label: 'AI Development', icon: <DevelopmentIcon />, query: 'AI development coding' },
+  { id: 'research', label: 'AI Research', icon: <ResearchIcon />, query: 'artificial intelligence research' },
+  { id: 'business', label: 'AI Business', icon: <BusinessIcon />, query: 'AI business applications' }
 ];
 
 function App() {
@@ -53,13 +53,18 @@ function App() {
       const response = await axios.get(NEWS_API_ENDPOINT, {
         params: {
           q: query,
-          sortBy: 'publishedAt',
-          apiKey: NEWS_API_KEY,
-          pageSize: 6
+          lang: 'en',
+          apikey: NEWS_API_KEY,
+          max: 6
         }
       });
 
-      setHeadlines(response.data.articles);
+      setHeadlines(response.data.articles.map(article => ({
+        ...article,
+        urlToImage: article.image,
+        publishedAt: article.publishedAt,
+        source: { name: article.source.name }
+      })));
       setLoading(false);
     } catch (err) {
       console.error('Error fetching news:', err);
