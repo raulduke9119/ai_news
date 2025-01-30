@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectHeart - Find Your Match</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff4757;
+            --secondary-color: #2f3542;
+            --accent-color: #ff6b81;
+            --light-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
+            color: var(--secondary-color);
+        }
+
+        .header {
+            background: var(--primary-color);
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--light-color);
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 80px;
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+                        url('pattern.png');
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 30px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            background: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .profiles-grid {
+            max-width: 1200px;
+            margin: 4rem auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">Connect❤️Heart</a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#search">Search</a>
+                <a href="#post">Post Ad</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Find Your Perfect Match</h1>
+            <div class="search-container">
+                <button class="search-btn" onclick="showSearchModal()">
+                    <i class="fas fa-search"></i> Search Partners
+                </button>
+                <button class="search-btn" onclick="showPostModal()">
+                    <i class="fas fa-plus"></i> Post Your Ad
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="profiles-grid" id="profiles">
+        <!-- Profile cards will be dynamically loaded here -->
+    </section>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <h2>Search Filters</h2>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label>I'm looking for:</label>
+                    <select>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Any</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Age Range:</label>
+                    <input type="range" min="18" max="100" value="30">
+                </div>
+                <button type="submit" class="search-btn">Search Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Post Ad Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <h2>Create Your Profile</h2>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <select required>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>About Me:</label>
+                    <textarea rows="4" required></textarea>
+                </div>
+                <button type="submit" class="search-btn">Submit for Approval</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample profiles data (replace with database data)
+        const profiles = [
+            { name: "Sarah", age: 28, location: "New York", gender: "female" },
+            { name: "Mike", age: 32, location: "London", gender: "male" }
+        ];
+
+        // Modal handling
+        function showSearchModal() {
+            document.getElementById('searchModal').style.display = 'flex';
+        }
+
+        function showPostModal() {
+            document.getElementById('postModal').style.display = 'flex';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Load profiles
+        window.onload = function() {
+            const grid = document.querySelector('.profiles-grid');
+            profiles.forEach(profile => {
+                grid.innerHTML += `
+                    <div class="profile-card">
+                        <img src="placeholder.jpg" class="profile-img">
+                        <h3>${profile.name}, ${profile.age}</h3>
+                        <p>${profile.location}</p>
+                        <button class="search-btn">View Profile</button>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

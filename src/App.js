@@ -28,16 +28,16 @@ import {
 import axios from 'axios';
 import NoImage from './assets/no-image.svg';
 
-const NEWS_API_KEY = 'f1708cabe10d87640699231367c8b8e1';
-const NEWS_API_ENDPOINT = 'https://gnews.io/api/v4/search';
+const NEWS_API_KEY = process.env.REACT_APP_NEWS_API_KEY || '78ec130bdfe24dc8a5f048b288345888';
+const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
 
 const categories = [
   { id: 'all', label: 'All AI News', icon: <NewsIcon />, query: 'artificial intelligence' },
-  { id: 'llm', label: 'LLMs & ChatGPT', icon: <LLMIcon />, query: 'large language models chatgpt' },
-  { id: 'robotics', label: 'Robotics & Automation', icon: <RoboticsIcon />, query: 'AI robotics automation' },
-  { id: 'development', label: 'AI Development', icon: <DevelopmentIcon />, query: 'AI development coding' },
-  { id: 'research', label: 'AI Research', icon: <ResearchIcon />, query: 'artificial intelligence research' },
-  { id: 'business', label: 'AI Business', icon: <BusinessIcon />, query: 'AI business applications' }
+  { id: 'llm', label: 'LLMs & ChatGPT', icon: <LLMIcon />, query: 'large language models OR chatgpt' },
+  { id: 'robotics', label: 'Robotics & Automation', icon: <RoboticsIcon />, query: 'AI robotics OR automation' },
+  { id: 'development', label: 'AI Development', icon: <DevelopmentIcon />, query: 'AI development tools OR coding' },
+  { id: 'research', label: 'AI Research', icon: <ResearchIcon />, query: 'artificial intelligence research breakthroughs' },
+  { id: 'business', label: 'AI Business', icon: <BusinessIcon />, query: 'AI business applications OR industry' }
 ];
 
 function App() {
@@ -50,33 +50,20 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      console.log('Fetching news for query:', query);
-      const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&lang=en&apikey=${NEWS_API_KEY}&max=6`;
-      console.log('Request URL:', url);
-      
-      const response = await axios.get(url);
-      console.log('API Response:', response.data);
+      const response = await axios.get(NEWS_API_ENDPOINT, {
+        params: {
+          q: query,
+          sortBy: 'publishedAt',
+          apiKey: NEWS_API_KEY,
+          pageSize: 6
+        }
+      });
 
-      if (response.data.articles && Array.isArray(response.data.articles)) {
-        setHeadlines(response.data.articles.map(article => ({
-          title: article.title,
-          description: article.description,
-          url: article.url,
-          urlToImage: article.image || NoImage,
-          publishedAt: article.publishedAt,
-          source: { name: article.source?.name || 'Unknown' }
-        })));
-      } else {
-        throw new Error('Invalid response format from API');
-      }
+      setHeadlines(response.data.articles);
       setLoading(false);
     } catch (err) {
-      console.error('Error details:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status
-      });
-      setError(err.response?.data?.message || err.message || 'Failed to load news headlines. Please try again later.');
+      console.error('Error fetching news:', err);
+      setError('Failed to load news headlines. Please try again later.');
       setLoading(false);
     }
   };
@@ -293,7 +280,7 @@ function App() {
                     <Box sx={{ position: 'relative', paddingTop: '56.25%' }}>
                       <CardMedia
                         component="img"
-                        image={article.urlToImage}
+                        image={article.urlToImage || NoImage}
                         alt={article.title}
                         className="news-image"
                         sx={{
